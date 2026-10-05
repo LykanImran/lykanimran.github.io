@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Dark Gradient -->
+    <radialGradient id="surface" cx="50%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#1A1A22" />
+      <stop offset="50%" stop-color="#101015" />
+      <stop offset="100%" stop-color="#08080B" />
+    </radialGradient>
+
+    <!-- Outer Rim Stroke -->
+    <linearGradient id="rimStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF5A4E" stop-opacity="0.9" />
+      <stop offset="30%" stop-color="#E8372D" stop-opacity="0.4" />
+      <stop offset="70%" stop-color="#2D1A1E" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#1B1B26" stop-opacity="0.7" />
+    </linearGradient>
+
+    <!-- Center Ambient Glow -->
+    <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#E8372D" stop-opacity="0.35" />
+      <stop offset="55%" stop-color="#E8372D" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#E8372D" stop-opacity="0.0" />
+    </radialGradient>
+
+    <!-- Facet Gradients for 3D Bevel Look -->
+    <linearGradient id="lightFacet" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF6B5E" />
+      <stop offset="100%" stop-color="#E8372D" />
+    </linearGradient>
+
+    <linearGradient id="darkFacet" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#D92D22" />
+      <stop offset="100%" stop-color="#9C170F" />
+    </linearGradient>
+
+    <linearGradient id="frontFace" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF5245" />
+      <stop offset="100%" stop-color="#C42016" />
+    </linearGradient>
+
+    <!-- Neon Glow Filter -->
+    <filter id="neon" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="6" stdDeviation="16" flood-color="#E8372D" flood-opacity="0.6" />
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#FFA8A0" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <!-- Base Squircle -->
+  <rect x="12" y="12" width="488" height="488" rx="114" fill="url(#surface)" />
+  <rect x="12" y="12" width="488" height="488" rx="114" fill="none" stroke="url(#rimStroke)" stroke-width="4" />
+
+  <!-- Ambient Glow -->
+  <circle cx="256" cy="256" r="185" fill="url(#centerGlow)" />
+
+  <!-- Monogram Group with Neon Shadow -->
+  <g filter="url(#neon)">
+    <!-- LEFT BRACKET < -->
+    <path d="M 176 172 L 92 256 L 176 340 L 152 364 L 44 256 L 152 148 Z" fill="url(#darkFacet)" />
+    <path d="M 152 148 L 44 256 L 92 256 L 176 172 Z" fill="url(#lightFacet)" />
+
+    <!-- CENTER I -->
+    <path d="M 210 162 L 302 162 L 302 198 L 210 198 Z" fill="url(#darkFacet)" />
+    <path d="M 210 162 L 302 162 L 298 174 L 214 174 Z" fill="url(#lightFacet)" opacity="0.9" />
+
+    <path d="M 234 198 L 278 198 L 278 314 L 234 314 Z" fill="url(#frontFace)" />
+    <path d="M 234 198 L 244 198 L 244 314 L 234 314 Z" fill="url(#lightFacet)" opacity="0.75" />
+
+    <path d="M 210 314 L 302 314 L 302 350 L 210 350 Z" fill="url(#darkFacet)" />
+    <path d="M 210 314 L 302 314 L 298 322 L 214 322 Z" fill="url(#lightFacet)" opacity="0.8" />
+
+    <!-- RIGHT BRACKET > -->
+    <path d="M 336 172 L 420 256 L 336 340 L 360 364 L 468 256 L 360 148 Z" fill="url(#darkFacet)" />
+    <path d="M 360 148 L 468 256 L 420 256 L 336 172 Z" fill="url(#lightFacet)" />
+  </g>
+</svg>

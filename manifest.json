@@ -1,13 +1,11 @@
 {
-    "name": "imran_portfolio
-",
-    "short_name": "imran_portfolio
-",
+    "name": "Muhammad Imran Hussain | Portfolio",
+    "short_name": "Imran Portfolio",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0e0e0e",
+    "theme_color": "#0e0e0e",
+    "description": "Muhammad Imran Hussain — Full Stack & Flutter App Developer Portfolio",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
