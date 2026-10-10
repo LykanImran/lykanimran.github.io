@@ -45,43 +45,129 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.4.456/pdf.worker.min.js";
   </script>
 
-  <!-- Portfolio Background Soundtrack (The Godfather Theme) -->
-  <audio id="portfolio-soundtrack" preload="auto" loop playsinline style="display:none;">
+  <!-- Background Soundtrack Audio & Controller -->
+  <audio id="portfolio-soundtrack" preload="auto" loop style="display:none">
     <source src="assets/audio/godfather_theme.mp3" type="audio/mpeg">
     <source src="assets/assets/audio/godfather_theme.mp3" type="audio/mpeg">
   </audio>
-  <script type="text/javascript">
+  <script>
     (function() {
-      var audio = document.getElementById('portfolio-soundtrack');
-      if (!audio) return;
-      audio.volume = 0.35;
+      var audio = null;
+      var pendingPlayPromise = null;
+      var manuallyPaused = false;
+      var gestureListenersAttached = false;
+      var gestureEvents = ['pointerdown', 'touchstart', 'click', 'keydown', 'scroll', 'wheel'];
 
-      function unlockAudio() {
-        if (window.__portfolioSoundtrackManuallyPaused) return;
-        var p = audio.play();
-        if (p && p.then) {
-          p.then(function() {
-            removeListeners();
-          }).catch(function() {});
+      function getAudio() {
+        if (!audio) {
+          audio = document.getElementById('portfolio-soundtrack');
+        }
+        return audio;
+      }
+
+      function onUserGesture() {
+        if (manuallyPaused) {
+          removeGestureListeners();
+          return;
+        }
+        removeGestureListeners();
+        window.__portfolioSoundtrack.play();
+      }
+
+      function setupGestureListeners() {
+        if (gestureListenersAttached || manuallyPaused) return;
+        gestureListenersAttached = true;
+        for (var i = 0; i < gestureEvents.length; i++) {
+          window.addEventListener(gestureEvents[i], onUserGesture, { passive: true, capture: true });
         }
       }
 
-      function removeListeners() {
-        var events = ['click', 'touchstart', 'touchend', 'pointerdown', 'pointerup', 'keydown'];
-        events.forEach(function(e) {
-          window.removeEventListener(e, unlockAudio, true);
-          document.removeEventListener(e, unlockAudio, true);
-        });
+      function removeGestureListeners() {
+        if (!gestureListenersAttached) return;
+        gestureListenersAttached = false;
+        for (var i = 0; i < gestureEvents.length; i++) {
+          window.removeEventListener(gestureEvents[i], onUserGesture, { capture: true });
+        }
       }
 
-      var events = ['click', 'touchstart', 'touchend', 'pointerdown', 'pointerup', 'keydown'];
-      events.forEach(function(e) {
-        window.addEventListener(e, unlockAudio, { capture: true, passive: true });
-        document.addEventListener(e, unlockAudio, { capture: true, passive: true });
-      });
+      window.__portfolioSoundtrack = {
+        init: function() {
+          var el = getAudio();
+          if (el) {
+            el.volume = 0.35;
+          }
+        },
+        play: function() {
+          var el = getAudio();
+          if (!el) return;
+          manuallyPaused = false;
+          removeGestureListeners();
 
-      // Attempt immediate unmuted autoplay on load
-      unlockAudio();
+          if (!el.paused) return;
+
+          try {
+            var promise = el.play();
+            if (promise && typeof promise.then === 'function') {
+              pendingPlayPromise = promise;
+              promise.then(function() {
+                pendingPlayPromise = null;
+              }).catch(function(err) {
+                pendingPlayPromise = null;
+                // Autoplay blocked by browser policy: unlock on first interaction
+                setupGestureListeners();
+              });
+            }
+          } catch (err) {
+            pendingPlayPromise = null;
+          }
+        },
+        pause: function() {
+          var el = getAudio();
+          if (!el) return;
+          manuallyPaused = true;
+          removeGestureListeners();
+
+          if (pendingPlayPromise) {
+            pendingPlayPromise.then(function() {
+              if (manuallyPaused && el) {
+                try { el.pause(); } catch (_) {}
+              }
+            }).catch(function() {});
+          } else {
+            try { el.pause(); } catch (_) {}
+          }
+        },
+        toggle: function() {
+          var el = getAudio();
+          if (!el) return;
+          if (el.paused) {
+            this.play();
+          } else {
+            this.pause();
+          }
+        },
+        setVolume: function(vol) {
+          var el = getAudio();
+          if (el) {
+            el.volume = Math.max(0, Math.min(1, vol));
+          }
+        },
+        toggleMute: function() {
+          var el = getAudio();
+          if (el) {
+            el.muted = !el.muted;
+          }
+        }
+      };
+
+      // Autoplay attempt on load
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+          window.__portfolioSoundtrack.play();
+        });
+      } else {
+        window.__portfolioSoundtrack.play();
+      }
     })();
   </script>
 
