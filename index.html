@@ -45,6 +45,46 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.4.456/pdf.worker.min.js";
   </script>
 
+  <!-- Portfolio Background Soundtrack (The Godfather Theme) -->
+  <audio id="portfolio-soundtrack" preload="auto" loop playsinline style="display:none;">
+    <source src="assets/audio/godfather_theme.mp3" type="audio/mpeg">
+    <source src="assets/assets/audio/godfather_theme.mp3" type="audio/mpeg">
+  </audio>
+  <script type="text/javascript">
+    (function() {
+      var audio = document.getElementById('portfolio-soundtrack');
+      if (!audio) return;
+      audio.volume = 0.35;
+
+      function unlockAudio() {
+        if (window.__portfolioSoundtrackManuallyPaused) return;
+        var p = audio.play();
+        if (p && p.then) {
+          p.then(function() {
+            removeListeners();
+          }).catch(function() {});
+        }
+      }
+
+      function removeListeners() {
+        var events = ['click', 'touchstart', 'touchend', 'pointerdown', 'pointerup', 'keydown'];
+        events.forEach(function(e) {
+          window.removeEventListener(e, unlockAudio, true);
+          document.removeEventListener(e, unlockAudio, true);
+        });
+      }
+
+      var events = ['click', 'touchstart', 'touchend', 'pointerdown', 'pointerup', 'keydown'];
+      events.forEach(function(e) {
+        window.addEventListener(e, unlockAudio, { capture: true, passive: true });
+        document.addEventListener(e, unlockAudio, { capture: true, passive: true });
+      });
+
+      // Attempt immediate unmuted autoplay on load
+      unlockAudio();
+    })();
+  </script>
+
   <script src="flutter_bootstrap.js" async></script>
 </body>
 
