@@ -56,7 +56,7 @@
       var pendingPlayPromise = null;
       var manuallyPaused = false;
       var gestureListenersAttached = false;
-      var gestureEvents = ['pointerdown', 'touchstart', 'click', 'keydown', 'scroll', 'wheel'];
+      var gestureEvents = ['pointerdown', 'touchstart', 'click', 'keydown'];
 
       function getAudio() {
         if (!audio) {
@@ -71,14 +71,19 @@
           return;
         }
         removeGestureListeners();
-        window.__portfolioSoundtrack.play();
+        var el = getAudio();
+        if (el) {
+          el.muted = false;
+          el.volume = 0.35;
+          window.__portfolioSoundtrack.play();
+        }
       }
 
       function setupGestureListeners() {
         if (gestureListenersAttached || manuallyPaused) return;
         gestureListenersAttached = true;
         for (var i = 0; i < gestureEvents.length; i++) {
-          window.addEventListener(gestureEvents[i], onUserGesture, { passive: true, capture: true });
+          window.addEventListener(gestureEvents[i], onUserGesture, { passive: true, capture: true, once: true });
         }
       }
 
@@ -101,9 +106,17 @@
           var el = getAudio();
           if (!el) return;
           manuallyPaused = false;
-          removeGestureListeners();
 
-          if (!el.paused) return;
+          // If already playing unmuted, we are all set
+          if (!el.paused && !el.muted) return;
+
+          // If playing muted and play() is called (explicit or on gesture), unmute it
+          if (!el.paused && el.muted) {
+            el.muted = false;
+            el.volume = 0.35;
+            removeGestureListeners();
+            return;
+          }
 
           try {
             var promise = el.play();
@@ -111,10 +124,25 @@
               pendingPlayPromise = promise;
               promise.then(function() {
                 pendingPlayPromise = null;
+                if (!el.muted) {
+                  removeGestureListeners();
+                }
               }).catch(function(err) {
                 pendingPlayPromise = null;
-                // Autoplay blocked by browser policy: unlock on first interaction
-                setupGestureListeners();
+                // Unmuted play blocked by browser autoplay policy:
+                // Start playback immediately muted so the track streams and advances right away,
+                // and automatically unmute on the user's first gesture!
+                el.muted = true;
+                var p2 = el.play();
+                if (p2 && typeof p2.then === 'function') {
+                  p2.then(function() {
+                    setupGestureListeners();
+                  }).catch(function() {
+                    setupGestureListeners();
+                  });
+                } else {
+                  setupGestureListeners();
+                }
               });
             }
           } catch (err) {
