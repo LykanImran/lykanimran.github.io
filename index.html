@@ -188,6 +188,14 @@
         }
       };
 
+      // Top-level global wrappers for direct JS interop without dot-notation lookup errors
+      window.initPortfolioSoundtrack = function() { window.__portfolioSoundtrack.init(); };
+      window.playPortfolioSoundtrack = function() { window.__portfolioSoundtrack.play(); };
+      window.pausePortfolioSoundtrack = function() { window.__portfolioSoundtrack.pause(); };
+      window.togglePortfolioSoundtrack = function() { window.__portfolioSoundtrack.toggle(); };
+      window.setPortfolioSoundtrackVolume = function(vol) { window.__portfolioSoundtrack.setVolume(vol); };
+      window.togglePortfolioSoundtrackMute = function() { window.__portfolioSoundtrack.toggleMute(); };
+
       // Autoplay attempt on load
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
